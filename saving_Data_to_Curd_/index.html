@@ -94,18 +94,29 @@ const expenseTable = document.getElementById('expenseTable');
 
 expenseTable.innerHTML = '';
 
-for(let i = 0; i < users.length; i++){
+axios.get("https://crudcrud.com/api/a4ed48e12098436e86710b6651e25fee/appointmentdata")
+.then((response)=>{
+    console.log(response);
+    console.log(response.data)
+    for(var i = 0; i < response.data.length; i++){
     expenseTable.innerHTML += `
         <tr>
             
-            <td>${users[i].name}</td>
-            <td>${users[i].email}</td>
-            <td>${users[i].phonenumber}</td>
-            <td><Button onclick="deleteExpense(${users[i].id})">
+            <td>${response.data[i].name}</td>
+            <td>${response.data[i].email}</td>
+            <td>${response.data[i].phonenumber}</td>
+            <td><Button onclick="deleteExpense(${response.data[i].id})">
                 Delete</Button></td>
         </tr>
     `;
 }
+})
+.catch((error)=>{
+    console.log(error);
+})
+
+
+
 
    }
    const deleteExpense = (id) => {
