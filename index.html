@@ -1,46 +1,169 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
-    <title>Axios Crash Course</title>
-  </head>
-  <body>
-    <div class="container my-5">
-      <div class="text-center">
-        <h1 class="display-4 text-center mb-3">Axios Crash Course</h1>
-        <button class="btn btn-primary my-3" id="get">GET</button>
-        <button class="btn btn-info" id="post">POST</button>
-        <button class="btn btn-warning" id="update">PUT/PATCH</button>
-        <button class="btn btn-danger" id="delete">DELETE</button>
-        <button class="btn btn-secondary" id="sim">Sim Requests</button>
-        <button class="btn btn-secondary" id="headers">
-          Custom Headers
-        </button>
-        <button class="btn btn-secondary" id="transform">
-          Transform
-        </button>
-        <button class="btn btn-secondary" id="error">
-          Error Handling
-        </button>
-        <button class="btn btn-secondary" id="cancel">
-          Cancel
-        </button>
-      </div>
-      <hr />
-      <div id="res"></div>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .tablerow{
+        background-color: red;
+        
+    }
+    button{
+    width: 200px;
+    color:#fff; 
+    padding: 10px;
+    text-align: center;
+    font-size: 1.1em;
+    line-height: 20px;
+    background-color: #04BF8A;
+    border-radius: 5px;
+    margin: 14px 25%;
+    cursor: pointer;
+}
 
+</style>
+<body>
+    <form id="expForm">
+    <label>Selling Price</label>
+    <input id='price' type="number" name="price" required/>
+    <label>Product Name</label>
+    <input id="product" type="text" name="product" required/>
+    
+    <button type="submit">Submit</button>
+    </form>
+    <section class="content">
+        <table class="table">
+            <thead>
+                <tr class="tablerow">
+                  
+                    <th>selling Price</th>
+                    <th>Product Name</th>
+                    
+                    
+                </tr>
+            </thead>
+            <tbody id="expenseTable">
+
+            </tbody>
+           
+        </table>
+        <h1>Products</h1>
+        <h2 id="total">
+
+        </h2>
+    </section>
+</form>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
-    <script src="main.js"></script>
-  </body>
+    
+    <script>
+     document.getElementById('expForm').addEventListener('submit', savetocrud);
+
+     function savetocrud(e){
+         e.preventDefault();
+
+         let sellingprice = document.getElementById('price').value;
+         let product = document.getElementById('product').value;
+
+         if(sellingprice.length>0 && product.length>0){
+             const user ={
+                 sellingprice,
+                 product
+
+             }
+
+             axios.post("https://crudcrud.com/api/bf1d438140b345268b107192536bc84f/userdata",user)
+             .then((response)=>{
+                 console.log(response);
+             })
+             .catch(err => console.log(err));
+         }
+
+         showdata();
+     }
+
+    const showdata = () =>{
+        const expenseTable = document.getElementById('expenseTable');
+
+expenseTable.innerHTML = '';
+
+axios.get("https://crudcrud.com/api/bf1d438140b345268b107192536bc84f/userdata")
+.then((response)=>{
+ console.log(response);
+ console.log(response.data)
+ 
+ for(var i = 0; i < response.data.length; i++){
+     // console.log(response.data[i]._id)
+ expenseTable.innerHTML += `
+     <tr>
+         
+         <td>${response.data[i].sellingprice}</td>
+         <td>${response.data[i].product}</td>
+        
+         <td><Button onclick="deleteUser('${response.data[i]._id}')">
+             Delete</Button></td>
+       
+
+     </tr>
+    
+ `;
+}
+})
+.catch((error)=>{
+ console.log(error);
+})
+     }
+
+     const deleteUser = (userid) => {
+    console.log(userid)
+    axios.delete(`https://crudcrud.com/api/bf1d438140b345268b107192536bc84f/userdata/${userid}`)
+    .then((response)=>{
+     console.log(response);
+        showusers();
+
+    })
+    .catch(err=>console.log(err));
+
+
+ // localStorage
+ //localStorage.setItem('users', JSON.stringify(users));
+ showusers();
+}
+
+const showtotal = () =>{
+    let thetotal=0;
+   const total  = document.getElementById('total');
+   total.innerHTML = '';
+
+   axios.get("https://crudcrud.com/api/bf1d438140b345268b107192536bc84f/userdata")
+.then((response)=>{
+ console.log(response);
+ console.log(response.data)
+ 
+
+ for(var i = 0; i < response.data.length; i++){
+     // console.log(response.data[i]._id)
+    
+  thetotal += parseInt(response.data[i].sellingprice)
+     
+     
+
+}
+console.log(parseInt(thetotal))
+
+total.innerHTML += `
+   The Total is: ${thetotal}.
+    
+ `;
+})
+.catch((error)=>{
+ console.log(error);
+})
+}
+     showdata();
+     showtotal();
+    </script>
+</body>
 </html>
